@@ -3,7 +3,10 @@ const { User } = require("./models");
 const Conversation = require("./models/conversation");
 const Message = require("./models/message");
 
+require('dotenv').config();
+
 async function seed() {
+
   await db.sync({ force: true });
   console.log("db synced!");
 
