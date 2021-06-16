@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const { User } = require("../../db/models");
 const jwt = require("jsonwebtoken");
-const { route } = require("../api");
 
 router.post("/register", async (req, res, next) => {
   try {
@@ -65,7 +64,6 @@ router.post("/login", async (req, res, next) => {
       console.log({ error: "Wrong username and/or password" });
       res.status(401).json({ error: "Wrong username and/or password" });
     } else {
-
       const token = jwt.sign(
         { id: user.dataValues.id },
         process.env.SESSION_SECRET,

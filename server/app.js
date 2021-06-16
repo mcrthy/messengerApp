@@ -21,7 +21,6 @@ app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
 app.use(cookieParser());
 
-
 app.use(function (req, res, next) {
   const token = req.cookies.token;
   if (token) {
@@ -55,7 +54,6 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   console.log(err);
   res.locals.message = err.message;
-  console.log(err.message);
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
