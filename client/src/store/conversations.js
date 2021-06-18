@@ -15,6 +15,7 @@ const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
+const CLEAR_UNREAD_COUNT = "CLEAR_UNREAD_COUNT";
 
 // ACTION CREATORS
 
@@ -59,6 +60,13 @@ export const clearSearchedUsers = () => {
   };
 };
 
+export const clearUnreadCount = (convoId) => {
+  return {
+    type: CLEAR_UNREAD_COUNT,
+    convoId,
+  };
+};
+
 // add new conversation when sending a new message
 export const addConversation = (recipientId, newMessage) => {
   return {
@@ -91,6 +99,15 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
+    case CLEAR_UNREAD_COUNT: {
+       return state.map((convo) => {
+        if (action.convoId === convo.id) {
+          return { ...convo, unreadCount: null};
+        } else {
+          return convo
+        };
+      })
+    }
     default:
       return state;
   }
