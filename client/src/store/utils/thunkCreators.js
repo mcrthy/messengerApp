@@ -81,13 +81,14 @@ const sendMessage = (data, body) => {
   });
 };
 
-// message format to send: {recipientId, text, conversationId}
-// conversationId will be set to null if its a brand new conversation
-export const postMessage = (body) => (dispatch) => {
+// message format to send: {recipientId, text, sender}
+// sender will be set to null if a conversation already exists
+export const postMessage = (body) => async (dispatch) => {
   try {
-    const data = saveMessage(body);
 
-    if (!body.conversationId) {
+    const data = await saveMessage(body);
+
+    if (body.sender) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
       dispatch(setNewMessage(data.message));
