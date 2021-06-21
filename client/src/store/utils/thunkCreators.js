@@ -99,6 +99,8 @@ export const updateUnreadMessages = (body) => async (dispatch) => {
   }
 };
 
+// message format to send: {recipientId, text, sender}
+// sender will be set to null if a conversation already exists
 export const postMessage = (body) => async (dispatch) => {
   try {
 
