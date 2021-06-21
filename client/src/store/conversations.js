@@ -60,18 +60,18 @@ export const clearSearchedUsers = () => {
   };
 };
 
-export const clearUnreadCount = (convoId) => {
-  return {
-    type: CLEAR_UNREAD_COUNT,
-    convoId,
-  };
-};
-
 // add new conversation when sending a new message
 export const addConversation = (recipientId, newMessage) => {
   return {
     type: ADD_CONVERSATION,
     payload: { recipientId, newMessage },
+  };
+};
+
+export const clearUnreadCount = (convoId) => {
+  return {
+    type: CLEAR_UNREAD_COUNT,
+    convoId,
   };
 };
 
@@ -100,14 +100,14 @@ const reducer = (state = [], action) => {
         action.payload.newMessage
       );
     case CLEAR_UNREAD_COUNT: {
-       return state.map((convo) => {
+      return state.map((convo) => {
         if (action.convoId === convo.id) {
-          return { ...convo, unreadCount: null};
+          return { ...convo, unreadCount: 0 };
         } else {
           return convo
         };
-      })
-    }
+       })
+     }
     default:
       return state;
   }
