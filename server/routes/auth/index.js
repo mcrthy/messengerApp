@@ -26,10 +26,17 @@ router.post("/register", async (req, res, next) => {
       process.env.SESSION_SECRET,
       { expiresIn: 86400 }
     );
-    res.json({
-      ...user.dataValues,
-      token,
+
+    const today = new Date();
+    const nextWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+
+    res.cookie("token", token, {
+      secure: process.env.NODE_ENV !== "development",
+      httpOnly: true,
+      expires: nextWeek,
     });
+
+    res.json(user.datavalues);
   } catch (error) {
     if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(401).json({ error: "User already exists" });
@@ -64,10 +71,17 @@ router.post("/login", async (req, res, next) => {
         process.env.SESSION_SECRET,
         { expiresIn: 86400 }
       );
-      res.json({
-        ...user.dataValues,
-        token,
+
+      const today = new Date();
+      const nextWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate()+7);
+
+      res.cookie("token", token, {
+        secure: process.env.NODE_ENV !== "development",
+        httpOnly: true,
+        expires: nextWeek,
       });
+
+      res.json(user.dataValues);
     }
   } catch (error) {
     next(error);
@@ -75,6 +89,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.delete("/logout", (req, res, next) => {
+  res.clearCookie('token');
   res.sendStatus(204);
 });
 
