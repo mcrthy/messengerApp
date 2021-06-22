@@ -5,7 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
-  clearUnreadCount,
+  clearUnseenCount,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -76,7 +76,7 @@ const saveMessage = async (body) => {
 
 export const updateMessages = async (body) => {
   try {
-    await axios.put("/api/messages", body);
+    await axios.put("/api/messages/update", body);
   } catch (error) {
     console.error(error);
   } 
@@ -90,10 +90,10 @@ const sendMessage = (data, body) => {
   });
 };
 
-export const updateUnreadMessages = (body) => async (dispatch) => {
+export const updateUnseenMessages = (body) => async (dispatch) => {
   try {
     await updateMessages(body);
-    dispatch(clearUnreadCount(body.conversationId));
+    dispatch(clearUnseenCount(body.conversationId));
   } catch (error) {
     console.error(error);
   }

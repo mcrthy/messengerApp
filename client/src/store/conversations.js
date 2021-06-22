@@ -15,7 +15,7 @@ const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
-const CLEAR_UNREAD_COUNT = "CLEAR_UNREAD_COUNT";
+const CLEAR_UNSEEN_COUNT = "CLEAR_UNSEEN_COUNT";
 
 // ACTION CREATORS
 
@@ -68,9 +68,9 @@ export const addConversation = (recipientId, newMessage) => {
   };
 };
 
-export const clearUnreadCount = (convoId) => {
+export const clearUnseenCount = (convoId) => {
   return {
-    type: CLEAR_UNREAD_COUNT,
+    type: CLEAR_UNSEEN_COUNT,
     convoId,
   };
 };
@@ -99,10 +99,10 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
-    case CLEAR_UNREAD_COUNT: {
+    case CLEAR_UNSEEN_COUNT: {
       return state.map((convo) => {
         if (action.convoId === convo.id) {
-          return { ...convo, unreadCount: 0 };
+          return { ...convo, unseenCount: 0 };
         } else {
           return convo
         };

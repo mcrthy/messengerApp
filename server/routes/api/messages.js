@@ -38,9 +38,9 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/", async (req, res, next) => {
+router.put("/update", async (req, res, next) => {
   try {
-    const unreadMessages = await Message.findAll({
+    const unseenMessages = await Message.findAll({
       where: {
         conversationId: {
           [Op.eq]: req.body.conversationId,
@@ -48,14 +48,14 @@ router.put("/", async (req, res, next) => {
         senderId: {
           [Op.not]: req.user.id,
         },
-        unread: {
-          [Op.eq]: true,
+        seen: {
+          [Op.eq]: false,
         },
       }
     });
 
-    unreadMessages.forEach(async (message) => {
-      message.unread = false;
+    unseenMessages.forEach(async (message) => {
+      message.seen = true;
       await message.save();
     });
 
