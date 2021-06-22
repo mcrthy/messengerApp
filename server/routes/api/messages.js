@@ -40,7 +40,7 @@ router.post("/", async (req, res, next) => {
 
 router.put("/update", async (req, res, next) => {
   try {
-    const unseenMessages = await Message.findAll({
+    await Message.update({seen: true}, {
       where: {
         conversationId: {
           [Op.eq]: req.body.conversationId,
@@ -51,12 +51,7 @@ router.put("/update", async (req, res, next) => {
         seen: {
           [Op.eq]: false,
         },
-      }
-    });
-
-    unseenMessages.forEach(async (message) => {
-      message.seen = true;
-      await message.save();
+      } 
     });
 
     return res.sendStatus(200);
