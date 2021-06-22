@@ -32,11 +32,16 @@ class Home extends Component {
 
   componentDidMount() {
     this.props.fetchConversations();
+    this.state.fetchTimer = setInterval(this.props.fetchConversations, 10000);
   }
 
   handleLogout = async () => {
     await this.props.logout(this.props.user.id);
   };
+
+  componentWillUnmount() {
+    clearInterval(this.state.fetchTimer);
+  }
 
   render() {
     const { classes } = this.props;
