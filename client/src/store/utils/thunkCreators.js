@@ -4,6 +4,7 @@ import {
   gotConversations,
   addConversation,
   setNewMessage,
+  setNewUnseenMessage,
   setSearchedUsers,
   clearUnseenCount,
 } from "../conversations";
@@ -76,18 +77,49 @@ const saveMessage = async (body) => {
 
 export const updateMessages = async (body) => {
   try {
-    await axios.put("/api/messages/update", body);
+    await axios.put("/api/messages/updateAll", body);
   } catch (error) {
     console.error(error);
   } 
-}
+};
+
+export const updateMessage = async (body) => {
+  try {
+    const data = await axios.post("/api/messages/updateOne", body);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
     recipientId: body.recipientId,
+    conversationId: body.conversationId,
     sender: data.sender,
   });
+};
+
+
+// expects {message, recipientId, conversationId, sender, userId, activeConversation}
+export const setReceivedMessage = (body) => async (dispatch) => {
+  try {
+    const {message, recipientId, conversationId, sender, userId, activeConversation } = body;
+
+    // only set the message for the recipient
+    if (userId === recipientId) {
+      // If the conversation is active, update the message to be seen and set it normally
+      if (activeConversation === sender.username) {
+        const updatedMessage = await updateMessage({ id: message.id });
+        dispatch(setNewMessage(updatedMessage.data));
+      } else {
+        dispatch(setNewUnseenMessage(message, conversationId, sender));
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const updateUnseenMessages = (body) => async (dispatch) => {
@@ -99,15 +131,16 @@ export const updateUnseenMessages = (body) => async (dispatch) => {
   }
 };
 
-// message format to send: {recipientId, text, sender}
-// sender will be set to null if a conversation already exists
+// message format to send: {text, recipientId, conversationId, sender}
 export const postMessage = (body) => async (dispatch) => {
   try {
 
-    const data = await saveMessage(body);
+    const { text, recipientId, conversationId, sender } = body;
 
-    if (body.sender) {
-      dispatch(addConversation(body.recipientId, data.message));
+    const data = await saveMessage({ text, recipientId, sender });
+
+    if (!conversationId) {
+      dispatch(addConversation(recipientId, data.message));
     } else {
       dispatch(setNewMessage(data.message));
     }

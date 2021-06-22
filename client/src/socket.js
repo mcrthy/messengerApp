@@ -1,5 +1,6 @@
 import io from "socket.io-client";
 import store from "./store";
+import { setReceivedMessage } from "./store/utils/thunkCreators";
 import {
   setNewMessage,
   removeOfflineUser,
@@ -18,8 +19,17 @@ socket.on("connect", () => {
   socket.on("remove-offline-user", (id) => {
     store.dispatch(removeOfflineUser(id));
   });
-  socket.on("new-message", (data) => {
-    store.dispatch(setNewMessage(data.message, data.sender));
+  socket.on("new-message", async (data) => {
+    const activeConversation = store.getState().activeConversation;
+    const userId = store.getState().user.id;
+    store.dispatch(setReceivedMessage({
+      message: data.message,
+      recipientId: data.recipientId,
+      conversationId: data.conversationId,
+      sender: data.sender,
+      userId,
+      activeConversation,
+    }));
   });
 });
 

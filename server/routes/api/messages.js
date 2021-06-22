@@ -3,14 +3,14 @@ const { Conversation, Message } = require("../../db/models");
 const onlineUsers = require("../../onlineUsers");
 const { Op } = require("sequelize");
 
-// expects {recipientId, text, sender} in body (sender will be null if a conversation already exists)
+// expects {text, recipientId, sender}
 router.post("/", async (req, res, next) => {
   try {
     if (!req.user) {
       return res.sendStatus(401);
     }
     const senderId = req.user.id;
-    const { recipientId, text, sender } = req.body;
+    const { text, recipientId, sender } = req.body;
 
     let conversation = await Conversation.findConversation(
       senderId,
@@ -38,7 +38,8 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/update", async (req, res, next) => {
+// expects {conversationId}
+router.put("/updateAll", async (req, res, next) => {
   try {
     await Message.update({seen: true}, {
       where: {
@@ -59,4 +60,25 @@ router.put("/update", async (req, res, next) => {
     next(error);
   }
 });
+
+// expects {id}
+router.post("/updateOne", async (req, res, next) => {
+  try {
+    const message = await Message.findOne({
+      where: {
+        id: {
+          [Op.eq]: req.body.id,
+        }
+      }
+    });
+
+    message.seen = true;
+    await message.save();
+
+    res.json(message.dataValues);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
