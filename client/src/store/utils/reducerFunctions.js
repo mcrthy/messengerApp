@@ -7,24 +7,18 @@ export const addUnseenMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      latestMessageText: message.text,
+      unseenCount: 1,
     };
 
-    if (!newConvo.unseenCount) {
-      newConvo.unseenCount = 0;
-    }
-
-    newConvo.unseenCount++;
-    
-    newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
 
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
       const convoCopy = { ...convo };
-      convoCopy.messages.push(message);
+      convoCopy.messages = [...convoCopy.messages, message];
       convoCopy.latestMessageText = message.text;
-
       convoCopy.unseenCount++;
 
       return convoCopy;
@@ -39,7 +33,7 @@ export const addMessageToStore = (state, message) => {
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
       const convoCopy = { ...convo };
-      convoCopy.messages.push(message);
+      convoCopy.messages = [...convoCopy.messages, message];
       convoCopy.latestMessageText = message.text;
 
       return convoCopy;
@@ -98,7 +92,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     if (convo.otherUser.id === recipientId) {
       const newConvo = { ...convo };
       newConvo.id = message.conversationId;
-      newConvo.messages.push(message);
+      newConvo.messages = [...newConvo.messages, message];
       newConvo.latestMessageText = message.text;
       return newConvo;
     } else {

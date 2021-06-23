@@ -39,7 +39,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // expects {conversationId}
-router.put("/updateAll", async (req, res, next) => {
+router.put("/seeAll", async (req, res, next) => {
   try {
     await Message.update({seen: true}, {
       where: {
@@ -62,7 +62,7 @@ router.put("/updateAll", async (req, res, next) => {
 });
 
 // expects {id}
-router.post("/updateOne", async (req, res, next) => {
+router.post("/seeOne", async (req, res, next) => {
   try {
     const message = await Message.findOne({
       where: {

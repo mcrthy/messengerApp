@@ -77,7 +77,7 @@ const saveMessage = async (body) => {
 
 export const updateMessages = async (body) => {
   try {
-    await axios.put("/api/messages/updateAll", body);
+    await axios.put("/api/messages/seeAll", body);
   } catch (error) {
     console.error(error);
   } 
@@ -85,7 +85,7 @@ export const updateMessages = async (body) => {
 
 export const updateMessage = async (body) => {
   try {
-    const data = await axios.post("/api/messages/updateOne", body);
+    const data = await axios.post("/api/messages/seeOne", body);
     return data;
   } catch (error) {
     console.error(error);

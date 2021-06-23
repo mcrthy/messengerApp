@@ -71,7 +71,7 @@ router.get("/", async (req, res, next) => {
       // set property for the number of unseen messages
       let unseenCount = 0;
       convoJSON.messages.forEach((message) => {
-        if (message.senderId == convoJSON.otherUser.id && !message.seen) {
+        if (message.senderId === convoJSON.otherUser.id && !message.seen) {
           unseenCount++;
         }
       });
