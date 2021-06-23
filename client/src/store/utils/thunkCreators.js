@@ -8,6 +8,7 @@ import {
   setSearchedUsers,
   clearUnseenCount,
 } from "../conversations";
+import { setActiveChat } from "../../store/activeConversation";
 import { gotUser, setFetchingStatus } from "../user";
 
 // USER THUNK CREATORS
@@ -101,6 +102,12 @@ const sendMessage = (data, body) => {
   });
 };
 
+const sendSeenUpdate = (body) => {
+  socket.emit("set-latest-seen", {
+    recipientId: body.recipientId,
+    conversationId: body.conversationId,
+  });
+};
 
 // expects {message, recipientId, conversationId, sender, userId, activeConversation}
 export const setReceivedMessage = (body) => async (dispatch) => {
@@ -113,6 +120,11 @@ export const setReceivedMessage = (body) => async (dispatch) => {
       if (activeConversation === sender.username) {
         const updatedMessage = await updateMessage({ id: message.id });
         dispatch(setNewMessage(updatedMessage.data));
+
+        sendSeenUpdate({
+          recipientId: sender.id,
+          conversationId: conversationId,
+        });
       } else {
         dispatch(setNewUnseenMessage(message, conversationId, sender));
       }
@@ -130,6 +142,20 @@ export const updateUnseenMessages = (body) => async (dispatch) => {
     console.error(error);
   }
 };
+
+// expects {conversationId, recipientId, otherUsername}
+export const handleChatSelection = (body) => async (dispatch) => {
+  try {
+    const { conversationId, recipientId, otherUsername } = body;
+
+    dispatch(updateUnseenMessages({ conversationId }));
+    dispatch(setActiveChat(otherUsername));
+
+    sendSeenUpdate({ recipientId, conversationId });
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 // message format to send: {text, recipientId, conversationId, sender}
 export const postMessage = (body) => async (dispatch) => {

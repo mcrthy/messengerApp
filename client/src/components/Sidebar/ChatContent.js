@@ -47,7 +47,7 @@ const ChatContent = (props) => {
   const { conversation } = props;
   const { latestMessageText, otherUser, unseenCount } = conversation;
 
-  const previewText = unseenCount == 0
+  const previewText = unseenCount === 0
                         ? classes.previewText
                         : classes.unseenPreviewText;
 

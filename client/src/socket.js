@@ -2,9 +2,9 @@ import io from "socket.io-client";
 import store from "./store";
 import { setReceivedMessage } from "./store/utils/thunkCreators";
 import {
-  setNewMessage,
   removeOfflineUser,
   addOnlineUser,
+  setLatestSeenMessage,
 } from "./store/conversations";
 
 const socket = io(window.location.origin);
@@ -30,6 +30,12 @@ socket.on("connect", () => {
       userId,
       activeConversation,
     }));
+  });
+  socket.on("set-latest-seen", async (data) => {
+    const userId = store.getState().user.id;
+    if (userId === data.recipientId) {
+      store.dispatch(setLatestSeenMessage(data.conversationId, userId));
+    }
   });
 });
 
