@@ -19,6 +19,7 @@ const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
 const CLEAR_UNSEEN_COUNT = "CLEAR_UNSEEN_COUNT";
 const SET_LATEST_SEEN_MESSAGE = "SET_LATEST_SEEN_MESSAGE";
+const SET_OTHER_USER_ACTIVE = "SET_OTHER_USER_ACTIVE";
 
 // ACTION CREATORS
 
@@ -33,6 +34,13 @@ export const setNewMessage = (message) => {
   return {
     type: SET_MESSAGE,
     message,
+  };
+};
+
+export const setOtherUserActive = (conversationId, isActive) => {
+  return {
+    type: SET_OTHER_USER_ACTIVE,
+    payload: { conversationId, isActive }
   };
 };
 
@@ -112,6 +120,8 @@ const reducer = (state = [], action) => {
     case SET_LATEST_SEEN_MESSAGE: {
       return state.map((convo) => {
         if (action.payload.conversationId === convo.id) {
+          const newConvo = { ...convo };
+
           const latestMessageId = convo.messages.reduce((messageId, message) => {
             if (message.senderId === action.payload.userId) {
               return message.id;
@@ -120,7 +130,9 @@ const reducer = (state = [], action) => {
             }
           }, null);
 
-          return { ...convo, latestMessageId };
+          newConvo.latestMessageId = latestMessageId;
+
+          return newConvo;
         } else {
           return convo;
         }
@@ -149,6 +161,15 @@ const reducer = (state = [], action) => {
         } else {
           return convo;
         }
+       });
+     }
+     case SET_OTHER_USER_ACTIVE: {
+       return state.map((convo) => {
+         if (action.payload.conversationId === convo.id) {
+           return { ...convo, otherUserActive: action.payload.isActive };
+         } else {
+           return convo;
+         }
        });
      }
     default:

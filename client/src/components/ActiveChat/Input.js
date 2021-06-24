@@ -38,6 +38,7 @@ class Input extends Component {
       text: event.target.text.value,
       recipientId: this.props.otherUser.id,
       conversationId: this.props.conversationId,
+      otherUserActive: this.props.otherUserActive,
       sender: this.props.user,
     };
     await this.props.postMessage(body);

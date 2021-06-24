@@ -20,11 +20,12 @@ const styles = {
 };
 
 class Chat extends Component {
-  handleClick = async (conversation) => {
+  handleClick = async (conversation, activeConversation) => {
     const body = {
       conversationId: conversation.id,
       otherUsername: conversation.otherUser.username,
       recipientId: conversation.otherUser.id,
+      activeConversation,
     };
     await this.props.handleChatSelection(body);
   };
@@ -32,9 +33,10 @@ class Chat extends Component {
   render() {
     const { classes } = this.props;
     const otherUser = this.props.conversation.otherUser;
+
     return (
       <Box
-        onClick={() => this.handleClick(this.props.conversation)}
+        onClick={() => this.handleClick(this.props.conversation, this.props.activeConversation)}
         className={classes.root}
       >
         <BadgeAvatar
@@ -49,6 +51,12 @@ class Chat extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    activeConversation: state.activeConversation
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     handleChatSelection: (body) => {
@@ -57,4 +65,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(Chat));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Chat));

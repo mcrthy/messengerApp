@@ -9,6 +9,7 @@ export const addUnseenMessageToStore = (state, payload) => {
       messages: [message],
       latestMessageText: message.text,
       unseenCount: 1,
+      otherUserActive: false,
     };
 
     return [newConvo, ...state];
@@ -60,6 +61,7 @@ export const removeOfflineUserFromStore = (state, id) => {
     if (convo.otherUser.id === id) {
       const convoCopy = { ...convo };
       convoCopy.otherUser.online = false;
+      convoCopy.otherUserActive = false;
       return convoCopy;
     } else {
       return convo;
@@ -94,6 +96,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       newConvo.id = message.conversationId;
       newConvo.messages = [...newConvo.messages, message];
       newConvo.latestMessageText = message.text;
+      newConvo.otherUserActive = false;
       return newConvo;
     } else {
       return convo;

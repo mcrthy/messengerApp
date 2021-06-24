@@ -5,6 +5,7 @@ import {
   removeOfflineUser,
   addOnlineUser,
   setLatestSeenMessage,
+  setOtherUserActive,
 } from "./store/conversations";
 
 const socket = io(window.location.origin);
@@ -19,9 +20,11 @@ socket.on("connect", () => {
   socket.on("remove-offline-user", (id) => {
     store.dispatch(removeOfflineUser(id));
   });
+
   socket.on("new-message", async (data) => {
-    const activeConversation = store.getState().activeConversation;
     const userId = store.getState().user.id;
+    const activeConversation = store.getState().activeConversation;
+
     store.dispatch(setReceivedMessage({
       message: data.message,
       recipientId: data.recipientId,
@@ -31,10 +34,19 @@ socket.on("connect", () => {
       activeConversation,
     }));
   });
+
   socket.on("set-latest-seen", async (data) => {
     const userId = store.getState().user.id;
     if (userId === data.recipientId) {
+      store.dispatch(setOtherUserActive(data.conversationId, true));
       store.dispatch(setLatestSeenMessage(data.conversationId, userId));
+    }
+  });
+
+  socket.on("left-convo", async (data) => {
+    const userId = store.getState().user.id;
+    if (userId === data.recipientId) {
+      store.dispatch(setOtherUserActive(data.conversationId, false));
     }
   });
 });

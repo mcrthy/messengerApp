@@ -53,8 +53,8 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("set-latest-seen", {
       recipientId: data.recipientId,
       conversationId: data.conversationId,
-    })
-  })
+    });
+  });
 
   socket.on("logout", (id) => {
     if (onlineUsers.includes(id)) {
@@ -62,6 +62,13 @@ io.on("connection", (socket) => {
       onlineUsers.splice(userIndex, 1);
       socket.broadcast.emit("remove-offline-user", id);
     }
+  });
+
+  socket.on("left-convo", (data) => {
+    socket.broadcast.emit("left-convo", {
+      recipientId: data.recipientId,
+      conversationId: data.conversationId,
+    });
   });
 });
 

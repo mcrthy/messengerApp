@@ -42,6 +42,7 @@ const ActiveChat = (props) => {
             />
             <Input
               otherUser={conversation.otherUser}
+              otherUserActive={conversation.otherUserActive}
               conversationId={conversation.id}
               user={user}
             />
@@ -58,7 +59,7 @@ const mapStateToProps = (state) => {
     conversation:
       state.conversations &&
       state.conversations.find(
-        (conversation) => conversation.otherUser.username === state.activeConversation
+        (conversation) => conversation.otherUser.username === state.activeConversation.username
       )
   };
 };

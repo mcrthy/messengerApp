@@ -7,8 +7,9 @@ import {
   setNewUnseenMessage,
   setSearchedUsers,
   clearUnseenCount,
+  setLatestSeenMessage,
 } from "../conversations";
-import { setActiveChat } from "../../store/activeConversation";
+import { setActiveChat, setReceiving } from "../../store/activeConversation";
 import { gotUser, setFetchingStatus } from "../user";
 
 // USER THUNK CREATORS
@@ -109,6 +110,13 @@ const sendSeenUpdate = (body) => {
   });
 };
 
+const sendLeftConvoUpdate = (body) => {
+  socket.emit("left-convo", {
+    recipientId: body.recipientId,
+    conversationId: body.conversationId,
+  });
+};
+
 // expects {message, recipientId, conversationId, sender, userId, activeConversation}
 export const setReceivedMessage = (body) => async (dispatch) => {
   try {
@@ -117,14 +125,18 @@ export const setReceivedMessage = (body) => async (dispatch) => {
     // only set the message for the recipient
     if (userId === recipientId) {
       // If the conversation is active, update the message to be seen and set it normally
-      if (activeConversation === sender.username) {
+      if (activeConversation.username === sender.username) {
         const updatedMessage = await updateMessage({ id: message.id });
         dispatch(setNewMessage(updatedMessage.data));
-
-        sendSeenUpdate({
-          recipientId: sender.id,
-          conversationId: conversationId,
-        });
+        // only need to send a seen update upon first message received in an active conversation, afterwards
+        // messages are known to be seen until the recipient leaves the conversation
+        if (!activeConversation.isReceiving) {
+          sendSeenUpdate({
+            recipientId: sender.id,
+            conversationId: conversationId,
+          });
+          dispatch(setReceiving(activeConversation))
+        }
       } else {
         dispatch(setNewUnseenMessage(message, conversationId, sender));
       }
@@ -143,25 +155,35 @@ export const updateUnseenMessages = (body) => async (dispatch) => {
   }
 };
 
-// expects {conversationId, recipientId, otherUsername}
+// expects {conversationId, recipientId, otherUsername, activeConversation}
 export const handleChatSelection = (body) => async (dispatch) => {
   try {
-    const { conversationId, recipientId, otherUsername } = body;
+    const { conversationId, recipientId, activeConversation } = body;
+
+    // if another convo is ongoing, send a message to the recipient indicating that the current user has left
+    // wait for this to go before you set the active chat
+    if (activeConversation.isReceiving) {
+      sendLeftConvoUpdate({
+        recipientId: activeConversation.recipientId,
+        conversationId: activeConversation.conversationId,
+      });
+    }
 
     dispatch(updateUnseenMessages({ conversationId }));
-    dispatch(setActiveChat(otherUsername));
 
     sendSeenUpdate({ recipientId, conversationId });
   } catch (error) {
     console.error(error);
+  } finally {
+    dispatch(setActiveChat(body.otherUsername, body.conversationId, body.recipientId));
   }
 }
 
-// message format to send: {text, recipientId, conversationId, sender}
+// message format to send: {text, recipientId, conversationId, otherUserActive, sender}
 export const postMessage = (body) => async (dispatch) => {
   try {
 
-    const { text, recipientId, conversationId, sender } = body;
+    const { text, recipientId, conversationId, otherUserActive, sender } = body;
 
     const data = await saveMessage({ text, recipientId, sender });
 
@@ -169,6 +191,10 @@ export const postMessage = (body) => async (dispatch) => {
       dispatch(addConversation(recipientId, data.message));
     } else {
       dispatch(setNewMessage(data.message));
+
+      if (otherUserActive) {
+        dispatch(setLatestSeenMessage(conversationId, sender.id));
+      }
     }
 
     sendMessage(data, body);
