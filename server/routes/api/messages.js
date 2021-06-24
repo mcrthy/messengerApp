@@ -1,15 +1,16 @@
 const router = require("express").Router();
 const { Conversation, Message } = require("../../db/models");
 const onlineUsers = require("../../onlineUsers");
+const { Op } = require("sequelize");
 
-// expects {recipientId, text, sender} in body (sender will be null if a conversation already exists)
+// expects {text, recipientId, sender}
 router.post("/", async (req, res, next) => {
   try {
     if (!req.user) {
       return res.sendStatus(401);
     }
     const senderId = req.user.id;
-    const { recipientId, text, sender } = req.body;
+    const { text, recipientId, sender } = req.body;
 
     let conversation = await Conversation.findConversation(
       senderId,
@@ -32,6 +33,49 @@ router.post("/", async (req, res, next) => {
       conversationId: conversation.id,
     });
     res.json({ message, sender });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// expects {conversationId}
+router.put("/seeAll", async (req, res, next) => {
+  try {
+    await Message.update({seen: true}, {
+      where: {
+        conversationId: {
+          [Op.eq]: req.body.conversationId,
+        },
+        senderId: {
+          [Op.not]: req.user.id,
+        },
+        seen: {
+          [Op.eq]: false,
+        },
+      } 
+    });
+
+    return res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// expects {id}
+router.post("/seeOne", async (req, res, next) => {
+  try {
+    const message = await Message.findOne({
+      where: {
+        id: {
+          [Op.eq]: req.body.id,
+        }
+      }
+    });
+
+    message.seen = true;
+    await message.save();
+
+    res.json(message.dataValues);
   } catch (error) {
     next(error);
   }

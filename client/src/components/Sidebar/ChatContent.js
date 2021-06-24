@@ -18,19 +18,26 @@ const useStyles = makeStyles((theme) => ({
     color: "#9CADC8",
     letterSpacing: -0.17,
   },
+  unseenPreviewText: {
+    fontSize: 12,
+    color: "black",
+    letterSpacing: -0.17,
+    fontWeight: 900,
+  },
   notification: {
     height: 20,
-    width: 20,
+    width: "fit-content",
     backgroundColor: "#3F92FF",
     marginRight: 10,
     color: "white",
     fontSize: 10,
-    letterSpacing: -0.5,
     fontWeight: "bold",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
+    paddingLeft: 7.5,
+    paddingRight: 7.5,
   },
 }));
 
@@ -38,7 +45,11 @@ const ChatContent = (props) => {
   const classes = useStyles();
 
   const { conversation } = props;
-  const { latestMessageText, otherUser } = conversation;
+  const { latestMessageText, otherUser, unseenCount } = conversation;
+
+  const previewText = unseenCount === 0
+                        ? classes.previewText
+                        : classes.unseenPreviewText;
 
   return (
     <Box className={classes.root}>
@@ -46,10 +57,15 @@ const ChatContent = (props) => {
         <Typography className={classes.username}>
           {otherUser.username}
         </Typography>
-        <Typography className={classes.previewText}>
+        <Typography className={previewText}>
           {latestMessageText}
         </Typography>
       </Box>
+      {unseenCount > 0 && <Box>
+        <Typography className={classes.notification}>
+            {unseenCount}
+        </Typography>
+      </Box>}
     </Box>
   );
 };

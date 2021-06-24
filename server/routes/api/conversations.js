@@ -68,9 +68,21 @@ router.get("/", async (req, res, next) => {
         convoJSON.otherUser.online = false;
       }
 
+      // set property for the number of unseen messages
+      let unseenCount = 0;
+      convoJSON.messages.forEach((message) => {
+        if (message.senderId === convoJSON.otherUser.id && !message.seen) {
+          unseenCount++;
+        }
+      });
+      convoJSON.unseenCount = unseenCount;
+
       // set properties for notification count and latest message preview
       convoJSON.latestMessageText = convoJSON.messages[0].text;
+
+      // reverse message list so it displays from oldest to newest
       convoJSON.messages.reverse();
+      
       conversations[i] = convoJSON;
     }
 

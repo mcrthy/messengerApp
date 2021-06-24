@@ -4,17 +4,21 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
+  addUnseenMessageToStore,
 } from "./utils/reducerFunctions";
 
 // ACTIONS
 
 const GET_CONVERSATIONS = "GET_CONVERSATIONS";
 const SET_MESSAGE = "SET_MESSAGE";
+const SET_UNSEEN_MESSAGE = "SET_UNSEEN_MESSAGE";
 const ADD_ONLINE_USER = "ADD_ONLINE_USER";
 const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
+const CLEAR_UNSEEN_COUNT = "CLEAR_UNSEEN_COUNT";
+const SET_LATEST_SEEN_MESSAGE = "SET_LATEST_SEEN_MESSAGE";
 
 // ACTION CREATORS
 
@@ -25,11 +29,32 @@ export const gotConversations = (conversations) => {
   };
 };
 
-export const setNewMessage = (message, sender) => {
+export const setNewMessage = (message) => {
   return {
     type: SET_MESSAGE,
-    payload: { message, sender: sender || null },
+    message,
   };
+};
+
+export const setLatestSeenMessage = (conversationId, userId) => {
+  return {
+    type: SET_LATEST_SEEN_MESSAGE,
+    payload: {
+      conversationId,
+      userId,
+    }
+  }
+};
+
+export const setNewUnseenMessage = (message, conversationId, sender) => {
+  return {
+    type: SET_UNSEEN_MESSAGE,
+    payload: {
+      message,
+      conversationId,
+      sender,
+    }
+  } 
 };
 
 export const addOnlineUser = (id) => {
@@ -67,6 +92,13 @@ export const addConversation = (recipientId, newMessage) => {
   };
 };
 
+export const clearUnseenCount = (convoId) => {
+  return {
+    type: CLEAR_UNSEEN_COUNT,
+    convoId,
+  };
+};
+
 // REDUCER
 
 const reducer = (state = [], action) => {
@@ -74,7 +106,26 @@ const reducer = (state = [], action) => {
     case GET_CONVERSATIONS:
       return action.conversations;
     case SET_MESSAGE:
-      return addMessageToStore(state, action.payload);
+      return addMessageToStore(state, action.message);
+    case SET_UNSEEN_MESSAGE:
+      return addUnseenMessageToStore(state, action.payload);
+    case SET_LATEST_SEEN_MESSAGE: {
+      return state.map((convo) => {
+        if (action.payload.conversationId === convo.id) {
+          const latestMessageId = convo.messages.reduce((messageId, message) => {
+            if (message.senderId === action.payload.userId) {
+              return message.id;
+            } else {
+              return messageId;
+            }
+          }, null);
+
+          return { ...convo, latestMessageId };
+        } else {
+          return convo;
+        }
+      });
+    }
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);
     }
@@ -91,6 +142,15 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
+    case CLEAR_UNSEEN_COUNT: {
+      return state.map((convo) => {
+        if (action.convoId === convo.id) {
+          return { ...convo, unseenCount: 0 };
+        } else {
+          return convo;
+        }
+       });
+     }
     default:
       return state;
   }
