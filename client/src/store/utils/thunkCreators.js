@@ -155,14 +155,13 @@ export const updateUnseenMessages = (body) => async (dispatch) => {
   }
 };
 
-// expects {conversationId, recipientId, otherUsername, activeConversation}
+// expects {conversationId, recipientId, otherUsername, otherUserOnline, activeConversation}
 export const handleChatSelection = (body) => async (dispatch) => {
   try {
-    const { conversationId, recipientId, activeConversation } = body;
+    const { conversationId, recipientId, activeConversation, otherUserOnline } = body;
 
     // if another convo is ongoing, send a message to the recipient indicating that the current user has left
-    // wait for this to go before you set the active chat
-    if (activeConversation.isReceiving) {
+    if (activeConversation.otherUserOnline && activeConversation.isReceiving) {
       sendLeftConvoUpdate({
         recipientId: activeConversation.recipientId,
         conversationId: activeConversation.conversationId,
@@ -171,19 +170,21 @@ export const handleChatSelection = (body) => async (dispatch) => {
 
     dispatch(updateUnseenMessages({ conversationId }));
 
-    sendSeenUpdate({ recipientId, conversationId });
+    if (otherUserOnline) {
+      sendSeenUpdate({ recipientId, conversationId });
+    }
   } catch (error) {
     console.error(error);
   } finally {
-    dispatch(setActiveChat(body.otherUsername, body.conversationId, body.recipientId));
+    dispatch(setActiveChat(body.otherUsername, body.conversationId, body.recipientId, body.otherUserOnline));
   }
 }
 
-// message format to send: {text, recipientId, conversationId, otherUserActive, sender}
+// message format to send: {text, recipientId, conversationId, otherUserActive, otherUserOnline, sender}
 export const postMessage = (body) => async (dispatch) => {
   try {
 
-    const { text, recipientId, conversationId, otherUserActive, sender } = body;
+    const { text, recipientId, conversationId, otherUserActive, otherUserOnline, sender } = body;
 
     const data = await saveMessage({ text, recipientId, sender });
 
@@ -197,7 +198,9 @@ export const postMessage = (body) => async (dispatch) => {
       }
     }
 
-    sendMessage(data, body);
+    if (otherUserOnline) {
+      sendMessage(data, body);
+    }
   } catch (error) {
     console.error(error);
   }

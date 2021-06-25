@@ -7,6 +7,7 @@ import {
   setLatestSeenMessage,
   setOtherUserActive,
 } from "./store/conversations";
+import { setOtherUserOnline } from "./store/activeConversation";
 
 const socket = io(window.location.origin);
 
@@ -14,10 +15,22 @@ socket.on("connect", () => {
   console.log("connected to server");
 
   socket.on("add-online-user", (id) => {
+    const activeConversation = store.getState().activeConversation;
+
+    if (activeConversation.conversationId === id) {
+      store.dispatch(setOtherUserOnline(true));
+    }
+
     store.dispatch(addOnlineUser(id));
   });
 
   socket.on("remove-offline-user", (id) => {
+    const activeConversation = store.getState().activeConversation;
+
+    if (activeConversation.conversationId === id) {
+      store.dispatch(setOtherUserOnline(false));
+    }
+
     store.dispatch(removeOfflineUser(id));
   });
 
