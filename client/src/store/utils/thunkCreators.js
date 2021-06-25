@@ -42,7 +42,10 @@ export const register = (credentials) => async (dispatch) => {
 
 export const login = (credentials) => async (dispatch) => {
   try {
+
+    console.log("posting login data...");
     const { data } = await axios.post("/auth/login", credentials);
+    console.log("posted login data");
     dispatch(gotUser(data));
     socket.emit("go-online", data.id);
   } catch (error) {
