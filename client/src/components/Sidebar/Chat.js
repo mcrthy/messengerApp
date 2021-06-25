@@ -24,7 +24,7 @@ class Chat extends Component {
     const body = {
       conversationId: conversation.id,
       otherUsername: conversation.otherUser.username,
-      OtherUserOnline: conversation.otherUser.online,
+      otherUserOnline: conversation.otherUser.online,
       recipientId: conversation.otherUser.id,
       activeConversation,
     };

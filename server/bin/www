@@ -8,7 +8,7 @@ require("dotenv").config();
  */
 
 const { app, sessionStore } = require("../app");
-const http = require("http");
+const https = require("https");
 const db = require("../db");
 const onlineUsers = require("../onlineUsers");
 
@@ -20,10 +20,10 @@ const port = normalizePort(process.env.PORT || "3001");
 app.set("port", port);
 
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
 
-const server = http.createServer(app);
+const server = https.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces, and sync database.
@@ -102,7 +102,7 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Event listener for HTTPS server "error" event.
  */
 
 function onError(error) {
@@ -128,7 +128,7 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener for HTTPS server "listening" event.
  */
 
 function onListening() {

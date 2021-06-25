@@ -18,7 +18,7 @@ export const setReceiving = () => {
 export const setOtherUserOnline = (otherUserOnline) => {
   return {
     type: SET_OTHER_USER_ONLINE,
-    otherUserOnline
+    otherUserOnline: otherUserOnline || false,
   }
 } 
 

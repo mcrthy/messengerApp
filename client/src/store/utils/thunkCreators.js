@@ -171,6 +171,7 @@ export const handleChatSelection = (body) => async (dispatch) => {
     dispatch(updateUnseenMessages({ conversationId }));
 
     if (otherUserOnline) {
+      console.log("seen update sent");
       sendSeenUpdate({ recipientId, conversationId });
     }
   } catch (error) {
@@ -199,6 +200,7 @@ export const postMessage = (body) => async (dispatch) => {
     }
 
     if (otherUserOnline) {
+      console.log("message sent");
       sendMessage(data, body);
     }
   } catch (error) {

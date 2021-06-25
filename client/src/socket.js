@@ -17,7 +17,9 @@ socket.on("connect", () => {
   socket.on("add-online-user", (id) => {
     const activeConversation = store.getState().activeConversation;
 
-    if (activeConversation.conversationId === id) {
+    // this is the other user ID, not the convo ID
+
+    if (activeConversation.recipientId === id) {
       store.dispatch(setOtherUserOnline(true));
     }
 
@@ -27,7 +29,7 @@ socket.on("connect", () => {
   socket.on("remove-offline-user", (id) => {
     const activeConversation = store.getState().activeConversation;
 
-    if (activeConversation.conversationId === id) {
+    if (activeConversation.recipientId === id) {
       store.dispatch(setOtherUserOnline(false));
     }
 
