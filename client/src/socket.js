@@ -7,7 +7,7 @@ import {
   setLatestSeenMessage,
   setOtherUserActive,
 } from "./store/conversations";
-import { setOtherUserOnline } from "./store/activeConversation";
+import { setOtherUserOnline, setOtherUserOffline } from "./store/activeConversation";
 
 const socket = io(window.location.origin);
 
@@ -20,7 +20,7 @@ socket.on("connect", () => {
     // this is the other user ID, not the convo ID
 
     if (activeConversation.recipientId === id) {
-      store.dispatch(setOtherUserOnline(true));
+      store.dispatch(setOtherUserOnline());
     }
 
     store.dispatch(addOnlineUser(id));
@@ -30,7 +30,7 @@ socket.on("connect", () => {
     const activeConversation = store.getState().activeConversation;
 
     if (activeConversation.recipientId === id) {
-      store.dispatch(setOtherUserOnline(false));
+      store.dispatch(setOtherUserOffline());
     }
 
     store.dispatch(removeOfflineUser(id));

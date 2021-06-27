@@ -9,7 +9,7 @@ import {
   clearUnseenCount,
   setLatestSeenMessage,
 } from "../conversations";
-import { setActiveChat, setReceiving } from "../../store/activeConversation";
+import { setActiveChat, setHasReceived } from "../../store/activeConversation";
 import { gotUser, setFetchingStatus } from "../user";
 
 // USER THUNK CREATORS
@@ -135,7 +135,7 @@ export const setReceivedMessage = (body) => async (dispatch) => {
             recipientId: sender.id,
             conversationId: conversationId,
           });
-          dispatch(setReceiving(activeConversation))
+          dispatch(setHasReceived(activeConversation))
         }
       } else {
         dispatch(setNewUnseenMessage(message, conversationId, sender));

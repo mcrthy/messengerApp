@@ -1,6 +1,7 @@
 const SET_ACTIVE_CHAT = "SET_ACTIVE_CHAT";
-const SET_RECEIVING = "SET_RECEIVING";
+const SET_HAS_RECEIVED = "SET_HAS_RECEIVED";
 const SET_OTHER_USER_ONLINE = "SET_OTHER_USER_ONLINE";
+const SET_OTHER_USER_OFFLINE = "SET_OTHER_USER_OFFLINE";
 
 export const setActiveChat = (username, conversationId, recipientId, otherUserOnline) => {
   return {
@@ -9,18 +10,23 @@ export const setActiveChat = (username, conversationId, recipientId, otherUserOn
   };
 };
 
-export const setReceiving = () => {
+export const setHasReceived = () => {
   return {
-    type: SET_RECEIVING,
+    type: SET_HAS_RECEIVED,
   }
 }
 
-export const setOtherUserOnline = (otherUserOnline) => {
+export const setOtherUserOnline = () => {
   return {
     type: SET_OTHER_USER_ONLINE,
-    otherUserOnline: otherUserOnline || false,
   }
-} 
+}
+
+export const setOtherUserOffline = () => {
+  return {
+    type: SET_OTHER_USER_OFFLINE,
+  }
+}
 
 const startingState = {
   username: null,
@@ -41,14 +47,20 @@ const reducer = (state = startingState, action) => {
         otherUserOnline: action.payload.otherUserOnline,
       };
     }
-    case SET_RECEIVING: {
+    case SET_HAS_RECEIVED: {
       const newState = { ...state };
       newState.hasReceived = true;
       return newState;
     }
     case SET_OTHER_USER_ONLINE: {
       const newState = { ...state };
-      newState.otherUserOnline = action.otherUserOnline;
+      newState.otherUserOnline = true;
+      return newState;
+    }
+    case SET_OTHER_USER_OFFLINE: {
+      const newState = { ...state };
+      newState.otherUserOnline = false;
+      newState.hasReceived = false;
       return newState;
     }
     default:
