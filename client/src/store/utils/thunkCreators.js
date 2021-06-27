@@ -42,10 +42,7 @@ export const register = (credentials) => async (dispatch) => {
 
 export const login = (credentials) => async (dispatch) => {
   try {
-
-    console.log("posting login data...");
     const { data } = await axios.post("/auth/login", credentials);
-    console.log("posted login data");
     dispatch(gotUser(data));
     socket.emit("go-online", data.id);
   } catch (error) {
@@ -174,7 +171,6 @@ export const handleChatSelection = (body) => async (dispatch) => {
     dispatch(updateUnseenMessages({ conversationId }));
 
     if (otherUserOnline) {
-      console.log("seen update sent");
       sendSeenUpdate({ recipientId, conversationId });
     }
   } catch (error) {
@@ -203,7 +199,6 @@ export const postMessage = (body) => async (dispatch) => {
     }
 
     if (otherUserOnline) {
-      console.log("message sent");
       sendMessage(data, body);
     }
   } catch (error) {

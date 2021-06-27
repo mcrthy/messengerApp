@@ -10,7 +10,6 @@ import {
 import { setOtherUserOnline } from "./store/activeConversation";
 
 const socket = io(window.location.origin);
-console.log("window location origin: ", window.location.origin);
 
 socket.on("connect", () => {
   console.log("connected to server");
