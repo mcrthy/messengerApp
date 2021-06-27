@@ -130,7 +130,7 @@ export const setReceivedMessage = (body) => async (dispatch) => {
         dispatch(setNewMessage(updatedMessage.data));
         // only need to send a seen update upon first message received in an active conversation, afterwards
         // messages are known to be seen until the recipient leaves the conversation
-        if (!activeConversation.isReceiving) {
+        if (!activeConversation.hasReceived) {
           sendSeenUpdate({
             recipientId: sender.id,
             conversationId: conversationId,
@@ -161,7 +161,7 @@ export const handleChatSelection = (body) => async (dispatch) => {
     const { conversationId, recipientId, activeConversation, otherUserOnline } = body;
 
     // if another convo is ongoing, send a message to the recipient indicating that the current user has left
-    if (activeConversation.otherUserOnline && activeConversation.isReceiving) {
+    if (activeConversation.otherUserOnline && activeConversation.hasReceived) {
       sendLeftConvoUpdate({
         recipientId: activeConversation.recipientId,
         conversationId: activeConversation.conversationId,

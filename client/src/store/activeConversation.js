@@ -26,7 +26,7 @@ const startingState = {
   username: null,
   conversationId: null,
   recipientId: null,
-  isReceiving: false,
+  hasReceived: false,
   otherUserOnline: false
 };
 
@@ -37,13 +37,13 @@ const reducer = (state = startingState, action) => {
         username: action.payload.username,
         conversationId: action.payload.conversationId,
         recipientId: action.payload.recipientId,
-        isReceiving: false,
+        hasReceived: false,
         otherUserOnline: action.payload.otherUserOnline,
       };
     }
     case SET_RECEIVING: {
       const newState = { ...state };
-      newState.isReceiving = true;
+      newState.hasReceived = true;
       return newState;
     }
     case SET_OTHER_USER_ONLINE: {
