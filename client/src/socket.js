@@ -33,9 +33,7 @@ socket.on("connect", () => {
   });
   socket.on("set-latest-seen", async (data) => {
     const userId = store.getState().user.id;
-    if (userId === data.recipientId) {
       store.dispatch(setLatestSeenMessage(data.conversationId, userId));
-    }
   });
 });
 

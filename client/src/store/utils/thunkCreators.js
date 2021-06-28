@@ -113,21 +113,17 @@ const sendSeenUpdate = (body) => {
 export const setReceivedMessage = (body) => async (dispatch) => {
   try {
     const {message, recipientId, conversationId, sender, userId, activeConversation } = body;
+    // If the conversation is active, update the message to be seen and set it normally
+    if (activeConversation === sender.username) {
+      const updatedMessage = await updateMessage({ id: message.id });
+      dispatch(setNewMessage(updatedMessage.data));
 
-    // only set the message for the recipient
-    if (userId === recipientId) {
-      // If the conversation is active, update the message to be seen and set it normally
-      if (activeConversation === sender.username) {
-        const updatedMessage = await updateMessage({ id: message.id });
-        dispatch(setNewMessage(updatedMessage.data));
-
-        sendSeenUpdate({
-          recipientId: sender.id,
-          conversationId: conversationId,
-        });
-      } else {
-        dispatch(setNewUnseenMessage(message, conversationId, sender));
-      }
+      sendSeenUpdate({
+        recipientId: sender.id,
+        conversationId: conversationId,
+      });
+    } else {
+      dispatch(setNewUnseenMessage(message, conversationId, sender));
     }
   } catch (error) {
     console.error(error);
