@@ -2,30 +2,81 @@ import React from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import {
+  Box,
   Grid,
   FormControl,
   TextField,
   Button,
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { login } from "./store/utils/thunkCreators";
+import banner from "./img/banner.png";
+import bubble from "./img/bubble.svg";
 
 const useStyles = makeStyles(() => ({
   root: {
     minHeight: "100vh",
   },
   image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
+    backgroundImage: "linear-gradient(rgba(58, 141, 255, 0.85), rgba(134, 185, 255, 0.85)), url(" + banner + ")",
+    backgroundSize: "cover",
   },
+  iconContainer: {
+    display: "flex",
+    flexDirection:"column",
+    justifyContent: "center",
+  },
+  mainContent: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    position: "relative",
+  },
+  bubbleIcon: {
+    display: "block",
+    margin: "auto",
+  },
+  bannerText: {
+    fontFamily: "'Open Sans', sans-serif",
+    color: "white",
+    fontSize: "x-large",
+    whiteSpace: "pre",
+    textAlign: "center",
+  },
+  loginButton: {
+    marginTop: 20,
+    backgroundColor: "#3A8DFF",
+    color: "white",
+    fontFamily: "'Open Sans', sans-serif",
+    width: "100px",
 
+  },
+  register: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingTop: 10,
+    paddingRight: 10,
+  },
+  registerButton: {
+    marginLeft: 10,
+    backgroundColor: "white",
+    color: "#3A8DFF",
+  },
+  welcomeText: {
+    fontFamily: "'Open Sans', sans-serif",
+    fontSize: "x-large",
+    fontWeight: "bold",
+    paddingRight: 40,
+  }
 }));
 
 
 const Login = (props) => {
   const history = useHistory();
   const classes = useStyles();
+  const bannerText = "Converse with anyone\nwith any language";
 
   const { user, login } = props;
 
@@ -43,39 +94,62 @@ const Login = (props) => {
 
   return (
       <Grid container className={classes.root}>
-        <Grid item xs={12} sm={5}>
-          <img src="https://www.rei.com/dam/van_dragt_031219_1_1363_how_to_snowboard_hero_lg.jpg" className={classes.image} alt="" />
+        <Grid container item xs={12} sm={5} className={classes.image}>
+          <Grid container item justify="center" className={classes.iconContainer}>
+            <Box>
+              <img src={bubble} alt="text bubble icon" className={classes.bubbleIcon}/>
+              <p className={classes.bannerText}>{bannerText}</p>
+            </Box>
+          </Grid>
         </Grid>
-        <form onSubmit={handleLogin}>
-          <Grid container item xs={12} sm={6} style={{padding: 10}}>
-            <Grid>
-              <FormControl margin="normal" required>
-                <TextField
-                  aria-label="username"
-                  label="Username"
-                  name="username"
-                  type="text"
-                />
-              </FormControl>
+        <Grid container item xs={12} sm={7}>
+          <Grid container item className={classes.register}>
+            <Grid item>
+              <Typography 
+                style={{padding: 10, color: "grey", fontFamily: "'Open Sans', sans-serif",}}>
+                  Don't have an account?
+              </Typography>
             </Grid>
-            <FormControl margin="normal" required>
-              <TextField
-                label="password"
-                aria-label="password"
-                type="password"
-                name="password"
-              />
-            </FormControl>
-            <Grid>
-              <Button type="submit" variant="contained" size="large">
-                Login
+            <Grid item>
+              <Button type="button" variant="contained" size="large" className={classes.registerButton}
+                onClick={() => history.push("/register")}>
+                    Create Account
               </Button>
             </Grid>
           </Grid>
-        </form>
-        {/* <Grid container item xs={12} sm={6} style={{padding: 10}}>
-
-        </Grid> */}
+          <Grid container item alignItems="center" direction="column">
+            <form onSubmit={handleLogin}>
+              <Grid item>
+                <Typography className={classes.welcomeText}>Welcome back!</Typography>
+              </Grid>
+              <Grid item>
+                <FormControl margin="normal" required>
+                  <TextField
+                    aria-label="username"
+                    label="Username"
+                    name="username"
+                    type="text"
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <FormControl margin="normal" required>
+                  <TextField
+                    label="Password"
+                    aria-label="password"
+                    type="password"
+                    name="password"
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <Button type="submit" variant="contained" size="large" className={classes.loginButton}>
+                      Login
+                </Button>
+              </Grid>
+            </form>
+          </Grid>
+        </Grid>
       </Grid>
   );
 }
@@ -95,90 +169,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
-
-// import React from "react";
-// import { Redirect, useHistory } from "react-router-dom";
-// import { connect } from "react-redux";
-// import {
-//   Grid,
-//   Box,
-//   Typography,
-//   Button,
-//   FormControl,
-//   TextField,
-// } from "@material-ui/core";
-// import { login } from "./store/utils/thunkCreators";
-
-// const Login = (props) => {
-//   const history = useHistory();
-//   const { user, login } = props;
-
-//   const handleLogin = async (event) => {
-//     event.preventDefault();
-//     const username = event.target.username.value;
-//     const password = event.target.password.value;
-
-//     await login({ username, password });
-//   };
-
-//   if (user.id) {
-//     return <Redirect to="/home" />;
-//   }
-
-//   return (
-//     <Grid container justify="center">
-//       <Box>
-//         <Grid container item>
-//           <Typography>Need to register?</Typography>
-//           <Button onClick={() => history.push("/register")}>Register</Button>
-//         </Grid>
-//         <form onSubmit={handleLogin}>
-//           <Grid>
-//             <Grid>
-//               <FormControl margin="normal" required>
-//                 <TextField
-//                   aria-label="username"
-//                   label="Username"
-//                   name="username"
-//                   type="text"
-//                 />
-//               </FormControl>
-//             </Grid>
-//             <FormControl margin="normal" required>
-//               <TextField
-//                 label="password"
-//                 aria-label="password"
-//                 type="password"
-//                 name="password"
-//               />
-//             </FormControl>
-//             <Grid>
-//               <Button type="submit" variant="contained" size="large">
-//                 Login
-//               </Button>
-//             </Grid>
-//           </Grid>
-//         </form>
-//       </Box>
-//     </Grid>
-//   );
-// };
-
-// const mapStateToProps = (state) => {
-//   return {
-//     user: state.user,
-//   };
-// };
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     login: (credentials) => {
-//       dispatch(login(credentials));
-//     },
-//   };
-// };
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Login);
-
-// export default Login;
-

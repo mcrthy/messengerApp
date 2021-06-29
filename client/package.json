@@ -7,6 +7,7 @@
     "@material-ui/icons": "^4.11.2",
     "axios": "^0.21.0",
     "cookie-parser": "^1.4.5",
+    "material-ui-image": "^3.3.2",
     "moment": "^2.29.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
