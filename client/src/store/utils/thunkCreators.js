@@ -156,7 +156,6 @@ export const handleChatSelection = (body) => async (dispatch) => {
 // message format to send: {text, recipientId, conversationId, sender}
 export const postMessage = (body) => async (dispatch) => {
   try {
-
     const { text, recipientId, conversationId, sender } = body;
 
     const data = await saveMessage({ text, recipientId, sender });

@@ -11,7 +11,8 @@ const { app, sessionStore } = require("../app");
 const http = require("http");
 const db = require("../db");
 const onlineUsers = require("../onlineUsers");
-
+const jwt = require("jsonwebtoken");
+const cookieParser = require('cookie');
 /**
  * Get port from environment and store in Express.
  */
@@ -31,7 +32,23 @@ const server = http.createServer(app);
 
 const io = require("socket.io")(server);
 
-io.on("connection", (socket) => {
+io.use(function (socket, next) {
+  const cookie = cookieParser.parse(socket.handshake.headers.cookie);
+  const token = cookie.token;
+
+  if (token) {
+    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
+      if (err) {
+        return next();
+      }
+      socket.decoded = decoded;
+      return next();
+    })
+  } else {
+    return next();
+  }
+})
+.on("connection", (socket) => {
   socket.on("go-online", (id) => {
     if (!onlineUsers.has(id)) {
       onlineUsers.add(id);
