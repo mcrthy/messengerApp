@@ -32,7 +32,6 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    position: "relative",
   },
   bubbleIcon: {
     display: "block",
@@ -46,6 +45,8 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
   },
   registerButton: {
+    display: "block",
+    margin: "auto",
     marginTop: 20,
     backgroundColor: "#3A8DFF",
     color: "white",
@@ -68,7 +69,6 @@ const useStyles = makeStyles(() => ({
     fontFamily: "'Open Sans', sans-serif",
     fontSize: "x-large",
     fontWeight: "bold",
-    paddingRight: 40,
   }
 }));
 
@@ -183,7 +183,6 @@ const Login = (props) => {
                   </FormHelperText>
                 </FormControl>
               </Grid>
-  
               <Grid item>
                 <Button type="submit" variant="contained" size="large" className={classes.registerButton}>
                       Create
