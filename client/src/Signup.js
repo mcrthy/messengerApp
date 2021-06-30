@@ -142,7 +142,6 @@ const Login = (props) => {
                   />
                 </FormControl>
               </Grid>
-
               <Grid item>
                 <FormControl margin="normal" required>
                   <TextField
@@ -154,9 +153,8 @@ const Login = (props) => {
                   />
                 </FormControl>
               </Grid>
-
               <Grid item>
-                <FormControl error={!!formErrorMessage.confirmPassword}>
+                <FormControl margin="normal" error={!!formErrorMessage.confirmPassword}>
                   <TextField
                     aria-label="password"
                     label="Password"
@@ -170,9 +168,8 @@ const Login = (props) => {
                   </FormHelperText>
                 </FormControl>
               </Grid>
-
               <Grid item>
-                <FormControl error={!!formErrorMessage.confirmPassword}>
+                <FormControl margin="normal" error={!!formErrorMessage.confirmPassword}>
                   <TextField
                     label="Confirm Password"
                     aria-label="confirm password"
