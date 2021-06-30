@@ -21,13 +21,10 @@ socket.on("connect", () => {
   });
   socket.on("new-message", async (data) => {
     const activeConversation = store.getState().activeConversation;
-    const userId = store.getState().user.id;
     store.dispatch(setReceivedMessage({
       message: data.message,
-      recipientId: data.recipientId,
       conversationId: data.conversationId,
       sender: data.sender,
-      userId,
       activeConversation,
     }));
   });

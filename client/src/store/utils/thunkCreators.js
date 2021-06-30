@@ -30,7 +30,7 @@ export const fetchUser = () => async (dispatch) => {
 
 export const register = (credentials) => async (dispatch) => {
   try {
-    const { data } = await axios.post("/auth/register", credentials);            
+    const { data } = await axios.post("/auth/register", credentials);       
     dispatch(gotUser(data));
     socket.emit("go-online", data.id);
   } catch (error) {
@@ -109,10 +109,10 @@ const sendSeenUpdate = (body) => {
   });
 };
 
-// expects {message, recipientId, conversationId, sender, userId, activeConversation}
+// expects {message, conversationId, sender, activeConversation}
 export const setReceivedMessage = (body) => async (dispatch) => {
   try {
-    const {message, recipientId, conversationId, sender, userId, activeConversation } = body;
+    const {message, conversationId, sender, activeConversation } = body;
     // If the conversation is active, update the message to be seen and set it normally
     if (activeConversation === sender.username) {
       const updatedMessage = await updateMessage({ id: message.id });

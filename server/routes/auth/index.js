@@ -37,7 +37,7 @@ router.post("/register", async (req, res, next) => {
       expires: nextWeek,
     });
 
-    res.json(user.datavalues);
+    res.json(user.dataValues);
   } catch (error) {
     if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(401).json({ error: "User already exists" });
