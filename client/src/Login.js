@@ -31,7 +31,6 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    position: "relative",
   },
   bubbleIcon: {
     display: "block",
@@ -45,12 +44,13 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
   },
   loginButton: {
+    display: "block",
+    margin: "auto",
     marginTop: 20,
     backgroundColor: "#3A8DFF",
     color: "white",
     fontFamily: "'Open Sans', sans-serif",
     width: "100px",
-
   },
   register: {
     display: "flex",
@@ -68,7 +68,6 @@ const useStyles = makeStyles(() => ({
     fontFamily: "'Open Sans', sans-serif",
     fontSize: "x-large",
     fontWeight: "bold",
-    paddingRight: 40,
   }
 }));
 
@@ -102,6 +101,7 @@ const Login = (props) => {
             </Box>
           </Grid>
         </Grid>
+        
         <Grid container item xs={12} sm={7}>
           <Grid container item className={classes.register}>
             <Grid item>
