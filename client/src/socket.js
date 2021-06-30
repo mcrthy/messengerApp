@@ -15,7 +15,7 @@ socket.on("connect", () => {
   socket.on("add-online-user", (id) => {
     store.dispatch(addOnlineUser(id));
   });
-
+  
   socket.on("remove-offline-user", (id) => {
     store.dispatch(removeOfflineUser(id));
   });

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { User } = require("../../db/models");
 const jwt = require("jsonwebtoken");
+const onlineUsers = require("../../onlineUsers");
 
 router.post("/register", async (req, res, next) => {
   try {
@@ -62,6 +63,9 @@ router.post("/login", async (req, res, next) => {
     if (!user) {
       console.log({ error: `No user found for username: ${username}` });
       res.status(401).json({ error: "Wrong username and/or password" });
+    } else if (onlineUsers.has(user.dataValues.id)) {
+      console.log({ error: `User already logged in: ${username}` });
+      res.status(401).json({ error: "User already logged in" });
     } else if (!user.correctPassword(password)) {
       console.log({ error: "Wrong username and/or password" });
       res.status(401).json({ error: "Wrong username and/or password" });
