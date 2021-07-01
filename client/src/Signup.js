@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
     minHeight: "100vh",
   },
   image: {
-    backgroundImage: "linear-gradient(rgba(58, 141, 255, 0.85), rgba(134, 185, 255, 0.85)), url(" + banner + ")",
+    backgroundImage: `linear-gradient(rgba(58, 141, 255, 0.85), rgba(134, 185, 255, 0.85)), url(${banner})`,
     backgroundSize: "cover",
   },
   iconContainer: {
@@ -38,10 +38,8 @@ const useStyles = makeStyles(() => ({
     margin: "auto",
   },
   bannerText: {
-    fontFamily: "'Open Sans', sans-serif",
     color: "white",
     fontSize: "x-large",
-    whiteSpace: "pre",
     textAlign: "center",
   },
   registerButton: {
@@ -76,7 +74,6 @@ const useStyles = makeStyles(() => ({
 const Signup = (props) => {
   const history = useHistory();
   const classes = useStyles();
-  const bannerText = "Converse with anyone\nwith any language";
 
   const { user, register } = props;
   const [formErrorMessage, setFormErrorMessage] = useState({});
@@ -106,12 +103,10 @@ const Signup = (props) => {
           <Grid container item justify="center" className={classes.iconContainer}>
             <Box>
               <img src={bubble} alt="text bubble icon" className={classes.bubbleIcon}/>
-              <p className={classes.bannerText}>{bannerText}</p>
+              <Typography className={classes.bannerText}>Converse with anyone<br /> with any language</Typography>
             </Box>
           </Grid>
         </Grid>
-
-
         <Grid container item xs={12} sm={7}>
           <Grid container item className={classes.login}>
             <Grid item>
