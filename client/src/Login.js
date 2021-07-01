@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import {
@@ -8,9 +8,11 @@ import {
   TextField,
   Button,
   Typography,
+  FormHelperText,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { login } from "./store/utils/thunkCreators";
+import { login, register } from "./store/utils/thunkCreators";
+import { clearLoginState, switchLoginState } from "./store/login";
 import banner from "./img/banner.png";
 import bubble from "./img/bubble.svg";
 
@@ -41,8 +43,9 @@ const useStyles = makeStyles(() => ({
     fontSize: "x-large",
     whiteSpace: "pre",
     textAlign: "center",
+    marginTop: 30,
   },
-  loginButton: {
+  submitButton: {
     display: "block",
     margin: "auto",
     marginTop: 20,
@@ -50,19 +53,19 @@ const useStyles = makeStyles(() => ({
     color: "white",
     width: "100px",
   },
-  register: {
+  pageSwitch: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-end",
     paddingTop: 10,
     paddingRight: 10,
   },
-  registerButton: {
+  pageSwitchButton: {
     marginLeft: 10,
     backgroundColor: "white",
     color: "#3A8DFF",
   },
-  welcomeText: {
+  formTitle: {
     fontSize: "x-large",
     fontWeight: "bold",
   }
@@ -73,7 +76,21 @@ const Login = (props) => {
   const history = useHistory();
   const classes = useStyles();
 
-  const { user, login } = props;
+  const { user, login, register, loginState, switchLoginState, clearLoginState } = props;
+  const [formErrorMessage, setFormErrorMessage] = useState({});
+
+  const handlePageSwitch = () => {
+    history.push(nextPath);
+    switchLoginState();
+  };
+
+  const handleSubmit = (event) => {
+    if (loginState === "login") {
+      handleLogin(event);
+    } else if (loginState === "register") {
+      handleRegister(event);
+    }
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -83,9 +100,46 @@ const Login = (props) => {
     await login({ username, password });
   };
 
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    const username = event.target.username.value;
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+    const confirmPassword = event.target.confirmPassword.value;
+
+    if (password !== confirmPassword) {
+      setFormErrorMessage({ confirmPassword: "Passwords must match" });
+      return;
+    }
+
+    await register({ username, email, password });
+    
+  };
+
   if (user.id) {
+    clearLoginState();
     return <Redirect to="/home" />;
   }
+
+  const submitButtonText = loginState === "login" ?
+                            "Log in" :
+                            "Create";
+
+  const pageSwitchText = loginState === "login" ?
+                          "Don't have an account?" :
+                          "Already have an account?";
+
+  const pageSwitchButtonText = loginState === "login" ?
+                                "Create Account" :
+                                "Log in";
+
+  const formTitleText = loginState === "login" ? 
+                          "Welcome Back!" :
+                          "Create an account."
+  
+  const nextPath = loginState === "login" ? 
+                    "/register" :
+                    "/login"
 
   return (
       <Grid container className={classes.root}>
@@ -97,25 +151,26 @@ const Login = (props) => {
             </Box>
           </Grid>
         </Grid>
+
         <Grid container item xs={12} sm={7}>
-          <Grid container item className={classes.register}>
+          <Grid container item className={classes.pageSwitch}>
             <Grid item>
               <Typography 
                 style={{padding: 10, color: "grey"}}>
-                  Don't have an account?
+                  {pageSwitchText}
               </Typography>
             </Grid>
             <Grid item>
-              <Button type="button" variant="contained" size="large" className={classes.registerButton}
-                onClick={() => history.push("/register")}>
-                    Create Account
+              <Button type="button" variant="contained" size="large" className={classes.pageSwitchButton}
+                onClick={handlePageSwitch}>
+                    {pageSwitchButtonText}
               </Button>
             </Grid>
           </Grid>
           <Grid container item alignItems="center" direction="column">
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSubmit}>
               <Grid item>
-                <Typography className={classes.welcomeText}>Welcome back!</Typography>
+                <Typography className={classes.formTitle}>{formTitleText}</Typography>
               </Grid>
               <Grid item>
                 <FormControl margin="normal" required>
@@ -127,7 +182,7 @@ const Login = (props) => {
                   />
                 </FormControl>
               </Grid>
-              <Grid item>
+              {loginState === "login" && <Grid item>
                 <FormControl margin="normal" required>
                   <TextField
                     label="Password"
@@ -136,10 +191,51 @@ const Login = (props) => {
                     name="password"
                   />
                 </FormControl>
-              </Grid>
+              </Grid>}
+              {loginState === "register" && <Grid item>
+                <FormControl margin="normal" required>
+                  <TextField
+                    label="E-mail address"
+                    aria-label="e-mail address"
+                    type="email"
+                    name="email"
+                    required
+                  />
+                </FormControl>
+              </Grid>}
+              {loginState === "register" && <Grid item>
+                <FormControl margin="normal" error={!!formErrorMessage.confirmPassword}>
+                  <TextField
+                    aria-label="password"
+                    label="Password"
+                    type="password"
+                    inputProps={{ minLength: 6 }}
+                    name="password"
+                    required
+                  />
+                  <FormHelperText>
+                    {formErrorMessage.confirmPassword}
+                  </FormHelperText>
+                </FormControl>
+              </Grid>}
+              {loginState === "register" && <Grid item>
+                <FormControl margin="normal" error={!!formErrorMessage.confirmPassword}>
+                  <TextField
+                    label="Confirm Password"
+                    aria-label="confirm password"
+                    type="password"
+                    inputProps={{ minLength: 6 }}
+                    name="confirmPassword"
+                    required
+                  />
+                  <FormHelperText>
+                    {formErrorMessage.confirmPassword}
+                  </FormHelperText>
+                </FormControl>
+              </Grid>}
               <Grid item>
-                <Button type="submit" variant="contained" size="large" className={classes.loginButton}>
-                      Login
+                <Button type="submit" variant="contained" size="large" className={classes.submitButton}>
+                      {submitButtonText}
                 </Button>
               </Grid>
             </form>
@@ -152,6 +248,7 @@ const Login = (props) => {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
+    loginState: state.login.page,
   };
 };
 
@@ -160,6 +257,15 @@ const mapDispatchToProps = (dispatch) => {
     login: (credentials) => {
       dispatch(login(credentials));
     },
+    register: (credentials) => {
+      dispatch(register(credentials));
+    },
+    clearLoginState: () => {
+      dispatch(clearLoginState());
+    },
+    switchLoginState: () => {
+      dispatch(switchLoginState());
+    }
   };
 };
 
