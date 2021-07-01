@@ -48,7 +48,6 @@ const useStyles = makeStyles(() => ({
     marginTop: 20,
     backgroundColor: "#3A8DFF",
     color: "white",
-    fontFamily: "'Open Sans', sans-serif",
     width: "100px",
   },
   register: {
@@ -64,7 +63,6 @@ const useStyles = makeStyles(() => ({
     color: "#3A8DFF",
   },
   welcomeText: {
-    fontFamily: "'Open Sans', sans-serif",
     fontSize: "x-large",
     fontWeight: "bold",
   }
@@ -74,7 +72,6 @@ const useStyles = makeStyles(() => ({
 const Login = (props) => {
   const history = useHistory();
   const classes = useStyles();
-  const bannerText = "Converse with anyone\nwith any language";
 
   const { user, login } = props;
 
@@ -104,7 +101,7 @@ const Login = (props) => {
           <Grid container item className={classes.register}>
             <Grid item>
               <Typography 
-                style={{padding: 10, color: "grey", fontFamily: "'Open Sans', sans-serif",}}>
+                style={{padding: 10, color: "grey"}}>
                   Don't have an account?
               </Typography>
             </Grid>

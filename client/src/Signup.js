@@ -48,7 +48,6 @@ const useStyles = makeStyles(() => ({
     marginTop: 20,
     backgroundColor: "#3A8DFF",
     color: "white",
-    fontFamily: "'Open Sans', sans-serif",
     width: "100px",
   },
   login: {
@@ -64,12 +63,10 @@ const useStyles = makeStyles(() => ({
     color: "#3A8DFF",
   },
   createAccountText: {
-    fontFamily: "'Open Sans', sans-serif",
     fontSize: "x-large",
     fontWeight: "bold",
   }
 }));
-
 
 const Login = (props) => {
   const history = useHistory();
@@ -111,7 +108,7 @@ const Login = (props) => {
           <Grid container item className={classes.login}>
             <Grid item>
               <Typography 
-                style={{padding: 10, color: "grey", fontFamily: "'Open Sans', sans-serif",}}>
+                style={{padding: 10, color: "grey"}}>
                   Already have an account?
               </Typography>
             </Grid>
