@@ -248,7 +248,7 @@ const Login = (props) => {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    loginState: state.login.page,
+    loginState: state.login,
   };
 };
 
