@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import store from "./store";
-import { setReceivedMessage } from "./store/utils/thunkCreators";
+import { setMessage, setReceivedMessage } from "./store/utils/thunkCreators";
 import {
   removeOfflineUser,
   addOnlineUser,
@@ -15,27 +15,29 @@ socket.on("connect", () => {
   socket.on("add-online-user", (id) => {
     store.dispatch(addOnlineUser(id));
   });
-
+  
   socket.on("remove-offline-user", (id) => {
     store.dispatch(removeOfflineUser(id));
   });
-  socket.on("new-message", async (data) => {
+  socket.on("new-message-recipient", async (data) => {
     const activeConversation = store.getState().activeConversation;
-    const userId = store.getState().user.id;
     store.dispatch(setReceivedMessage({
       message: data.message,
-      recipientId: data.recipientId,
       conversationId: data.conversationId,
       sender: data.sender,
-      userId,
       activeConversation,
+    }));
+  });
+  socket.on("new-message-sender", async (data) => {
+    store.dispatch(setMessage({
+      conversationId: data.conversationId,
+      recipientId: data.recipientId,
+      message: data.message,
     }));
   });
   socket.on("set-latest-seen", async (data) => {
     const userId = store.getState().user.id;
-    if (userId === data.recipientId) {
       store.dispatch(setLatestSeenMessage(data.conversationId, userId));
-    }
   });
 });
 

@@ -11,7 +11,8 @@ const { app, sessionStore } = require("../app");
 const http = require("http");
 const db = require("../db");
 const onlineUsers = require("../onlineUsers");
-
+const jwt = require("jsonwebtoken");
+const cookieParser = require('cookie');
 /**
  * Get port from environment and store in Express.
  */
@@ -31,35 +32,67 @@ const server = http.createServer(app);
 
 const io = require("socket.io")(server);
 
-io.on("connection", (socket) => {
+io.use(function (socket, next) {
+  const cookie = cookieParser.parse(socket.handshake.headers.cookie);
+  const token = cookie.token;
+
+  if (token) {
+    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
+      if (err) {
+        return next();
+      }
+      socket.decoded = decoded;
+      return next();
+    })
+  } else {
+    return next();
+  }
+})
+.on("connection", (socket) => {
   socket.on("go-online", (id) => {
-    if (!onlineUsers.includes(id)) {
-      onlineUsers.push(id);
+    if (!onlineUsers.has(id)) {
+      onlineUsers.set(id, new Set([socket.id]));
+    } else if (!onlineUsers.get(id).has(socket.id)) {
+      onlineUsers.get(id).add(socket.id);
     }
+
+    socket.join(id);
+    
     // send the user who just went online to everyone else who is already online
     socket.broadcast.emit("add-online-user", id);
   });
 
   socket.on("new-message", (data) => {
-    socket.broadcast.emit("new-message", {
+    socket.to(data.recipientId).emit("new-message-recipient", {
       message: data.message,
-      recipientId: data.recipientId,
       conversationId: data.conversationId,
       sender: data.sender,
+    });
+
+    socket.to(data.sender.id).emit("new-message-sender", {
+      message: data.message,
+      conversationId: data.conversationId,
+      recipientId: data.recipientId,
     });
   });
 
   socket.on("set-latest-seen", (data) => {
-    socket.broadcast.emit("set-latest-seen", {
-      recipientId: data.recipientId,
+    socket.to(data.recipientId).emit("set-latest-seen", {
       conversationId: data.conversationId,
     })
   })
 
   socket.on("logout", (id) => {
-    if (onlineUsers.includes(id)) {
-      userIndex = onlineUsers.indexOf(id);
-      onlineUsers.splice(userIndex, 1);
+
+    if (onlineUsers.has(id)) {
+      if (onlineUsers.get(id).has(socket.id)) {
+        onlineUsers.get(id).delete(socket.id);
+      }
+
+      if (onlineUsers.get(id).size === 0) {
+        onlineUsers.delete(id);
+      }
+
       socket.broadcast.emit("remove-offline-user", id);
     }
   });

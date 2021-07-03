@@ -30,7 +30,7 @@ export const fetchUser = () => async (dispatch) => {
 
 export const register = (credentials) => async (dispatch) => {
   try {
-    const { data } = await axios.post("/auth/register", credentials);            
+    const { data } = await axios.post("/auth/register", credentials);       
     dispatch(gotUser(data));
     socket.emit("go-online", data.id);
   } catch (error) {
@@ -109,25 +109,21 @@ const sendSeenUpdate = (body) => {
   });
 };
 
-// expects {message, recipientId, conversationId, sender, userId, activeConversation}
+// expects {message, conversationId, sender, activeConversation}
 export const setReceivedMessage = (body) => async (dispatch) => {
   try {
-    const {message, recipientId, conversationId, sender, userId, activeConversation } = body;
+    const {message, conversationId, sender, activeConversation } = body;
+    // If the conversation is active, update the message to be seen and set it normally
+    if (activeConversation === sender.username) {
+      const updatedMessage = await updateMessage({ id: message.id });
+      dispatch(setNewMessage(updatedMessage.data));
 
-    // only set the message for the recipient
-    if (userId === recipientId) {
-      // If the conversation is active, update the message to be seen and set it normally
-      if (activeConversation === sender.username) {
-        const updatedMessage = await updateMessage({ id: message.id });
-        dispatch(setNewMessage(updatedMessage.data));
-
-        sendSeenUpdate({
-          recipientId: sender.id,
-          conversationId: conversationId,
-        });
-      } else {
-        dispatch(setNewUnseenMessage(message, conversationId, sender));
-      }
+      sendSeenUpdate({
+        recipientId: sender.id,
+        conversationId: conversationId,
+      });
+    } else {
+      dispatch(setNewUnseenMessage(message, conversationId, sender));
     }
   } catch (error) {
     console.error(error);
@@ -157,19 +153,23 @@ export const handleChatSelection = (body) => async (dispatch) => {
   }
 }
 
+export const setMessage = ({ conversationId, recipientId, message }) => async (dispatch) => {
+  if (!conversationId) {
+    dispatch(addConversation(recipientId, message));
+  } else {
+    dispatch(setNewMessage(message));
+  }
+};
+
 // message format to send: {text, recipientId, conversationId, sender}
 export const postMessage = (body) => async (dispatch) => {
   try {
-
     const { text, recipientId, conversationId, sender } = body;
 
     const data = await saveMessage({ text, recipientId, sender });
+    const message = data.message;
 
-    if (!conversationId) {
-      dispatch(addConversation(recipientId, data.message));
-    } else {
-      dispatch(setNewMessage(data.message));
-    }
+    dispatch(setMessage({ conversationId, recipientId, message }));
 
     sendMessage(data, body);
   } catch (error) {
