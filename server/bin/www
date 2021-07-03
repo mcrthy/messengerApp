@@ -63,10 +63,16 @@ io.use(function (socket, next) {
   });
 
   socket.on("new-message", (data) => {
-    socket.to(data.recipientId).emit("new-message", {
+    socket.to(data.recipientId).emit("new-message-recipient", {
       message: data.message,
       conversationId: data.conversationId,
       sender: data.sender,
+    });
+
+    socket.to(data.sender.id).emit("new-message-sender", {
+      message: data.message,
+      conversationId: data.conversationId,
+      recipientId: data.recipientId,
     });
   });
 

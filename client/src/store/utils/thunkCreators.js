@@ -153,18 +153,23 @@ export const handleChatSelection = (body) => async (dispatch) => {
   }
 }
 
+export const setMessage = ({ conversationId, recipientId, message }) => async (dispatch) => {
+  if (!conversationId) {
+    dispatch(addConversation(recipientId, message));
+  } else {
+    dispatch(setNewMessage(message));
+  }
+};
+
 // message format to send: {text, recipientId, conversationId, sender}
 export const postMessage = (body) => async (dispatch) => {
   try {
     const { text, recipientId, conversationId, sender } = body;
 
     const data = await saveMessage({ text, recipientId, sender });
+    const message = data.message;
 
-    if (!conversationId) {
-      dispatch(addConversation(recipientId, data.message));
-    } else {
-      dispatch(setNewMessage(data.message));
-    }
+    dispatch(setMessage({ conversationId, recipientId, message }));
 
     sendMessage(data, body);
   } catch (error) {
