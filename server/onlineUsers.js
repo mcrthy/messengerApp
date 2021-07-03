@@ -1,2 +1,2 @@
-const onlineUsers = new Set();
+const onlineUsers = new Map();
 module.exports = onlineUsers;

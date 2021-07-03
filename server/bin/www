@@ -51,7 +51,9 @@ io.use(function (socket, next) {
 .on("connection", (socket) => {
   socket.on("go-online", (id) => {
     if (!onlineUsers.has(id)) {
-      onlineUsers.add(id);
+      onlineUsers.set(id, new Set([socket.id]));
+    } else if (!onlineUsers.get(id).has(socket.id)) {
+      onlineUsers.get(id).add(socket.id);
     }
 
     socket.join(id);
@@ -75,8 +77,16 @@ io.use(function (socket, next) {
   })
 
   socket.on("logout", (id) => {
+
     if (onlineUsers.has(id)) {
-      onlineUsers.delete(id);
+      if (onlineUsers.get(id).has(socket.id)) {
+        onlineUsers.get(id).delete(socket.id);
+      }
+
+      if (onlineUsers.get(id).size === 0) {
+        onlineUsers.delete(id);
+      }
+
       socket.broadcast.emit("remove-offline-user", id);
     }
   });
