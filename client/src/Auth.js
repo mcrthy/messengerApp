@@ -1,18 +1,13 @@
-import React, { useState } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import React from "react";
+import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import {
   Box,
   Grid,
-  FormControl,
-  TextField,
-  Button,
   Typography,
-  FormHelperText,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { login, register } from "./store/utils/thunkCreators";
-import { clearLoginState, switchLoginState } from "./store/login";
+import { clearLoginState } from "./store/login";
 import banner from "./img/banner.png";
 import bubble from "./img/bubble.svg";
 import Login from "./components/Auth/Login";
@@ -47,14 +42,9 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
     marginTop: 30,
   },
-  submitButton: {
-    display: "block",
-    margin: "auto",
-    marginTop: 20,
-    backgroundColor: "#3A8DFF",
-    color: "white",
-    width: "100px",
-  },
+}));
+
+const useFormStyles = makeStyles(() => ({
   pageSwitch: {
     display: "flex",
     flexDirection: "row",
@@ -74,12 +64,20 @@ const useStyles = makeStyles(() => ({
   formTitle: {
     fontSize: "x-large",
     fontWeight: "bold",
-  }
+  },
+  submitButton: {
+    display: "block",
+    margin: "auto",
+    marginTop: 20,
+    backgroundColor: "#3A8DFF",
+    color: "white",
+    width: "100px",
+  },
 }));
-
 
 const Auth = ({ user, loginState, clearLoginState}) => {
   const classes = useStyles();
+  const formClasses = useFormStyles();
 
   if (user.id) {
     clearLoginState();
@@ -97,8 +95,8 @@ const Auth = ({ user, loginState, clearLoginState}) => {
           </Grid>
         </Grid>
 
-        {loginState === "login" && <Login classes={classes}/>}
-        {loginState === "signup" && <Signup classes={classes}/>}
+        {loginState === "login" && <Login classes={formClasses}/>}
+        {loginState === "signup" && <Signup classes={formClasses}/>}
 
       </Grid>
   );
