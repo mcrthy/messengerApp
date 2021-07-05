@@ -28,10 +28,9 @@ const usePrevious = (value) => {
   return ref.current;
 };
 
-const Home = (props) => {
+const Home = ({ user, logout, fetchConversations }) => {
   const classes = useStyles();
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const { user, logout, fetchConversations } = props;
   const prevId = usePrevious(user.id);
 
   useFetching(fetchConversations);

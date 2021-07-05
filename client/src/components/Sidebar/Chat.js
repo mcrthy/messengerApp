@@ -19,10 +19,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Chat = (props) => {
+const Chat = ({ conversation, handleChatSelection }) => {
   const classes = useStyles();
-
-  const { conversation, handleChatSelection } = props;
   const otherUser = conversation.otherUser;
 
   const handleClick = async (conversation) => {
