@@ -13,11 +13,11 @@ export const clearLoginState = () => {
   };
 }
 
-const reducer = (state = "register", action) => {
+const reducer = (state = "signup", action) => {
   switch (action.type) {
     case SWITCH_LOGIN_STATE: {
       if (state === "login") {
-        return "register";
+        return "signup";
       } else {
         return "login";
       }
