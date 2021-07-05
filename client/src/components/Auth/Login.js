@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import { login } from "../../store/utils/thunkCreators";
-import { switchLoginState } from "../../store/login";
 
 const Login = ({ classes }) => {
   const dispatch = useDispatch();
@@ -17,7 +16,6 @@ const Login = ({ classes }) => {
 
   const handlePageSwitch = () => {
     history.push("/register");
-    dispatch(switchLoginState());
   };
 
   const handleLogin = async (event) => {

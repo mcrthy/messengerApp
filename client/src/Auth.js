@@ -1,19 +1,18 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Box,
   Grid,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { clearLoginState } from "./store/login";
 import banner from "./img/banner.png";
 import bubble from "./img/bubble.svg";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 
-const useStyles = makeStyles(() => ({
+const useBannerStyles = makeStyles(() => ({
   root: {
     minHeight: "100vh",
   },
@@ -44,7 +43,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const useFormStyles = makeStyles(() => ({
+const useAuthStyles = makeStyles(() => ({
   pageSwitch: {
     display: "flex",
     flexDirection: "row",
@@ -76,32 +75,30 @@ const useFormStyles = makeStyles(() => ({
 }));
 
 const Auth = () => {
-  const dispatch = useDispatch();
-
-  const classes = useStyles();
-  const formClasses = useFormStyles();
+  const bannerClasses = useBannerStyles();
+  const authClasses = useAuthStyles();
 
   const user = useSelector(state => state.user);
-  const loginState = useSelector(state => state.login);
+
+  const pathname = window.location.pathname;
 
   if (user.id) {
-    dispatch(clearLoginState());
     return <Redirect to="/home" />;
   }
 
   return (
-      <Grid container className={classes.root}>
-        <Grid container item xs={12} sm={5} className={classes.image}>
-          <Grid container item justify="center" className={classes.iconContainer}>
+      <Grid container className={bannerClasses.root}>
+        <Grid container item xs={12} sm={5} className={bannerClasses.image}>
+          <Grid container item justify="center" className={bannerClasses.iconContainer}>
             <Box>
-              <img src={bubble} alt="text bubble icon" className={classes.bubbleIcon}/>
-              <Typography className={classes.bannerText}>Converse with anyone<br />with any language</Typography>
+              <img src={bubble} alt="text bubble icon" className={bannerClasses.bubbleIcon}/>
+              <Typography className={bannerClasses.bannerText}>Converse with anyone<br />with any language</Typography>
             </Box>
           </Grid>
         </Grid>
 
-        {loginState === "login" && <Login classes={formClasses}/>}
-        {loginState === "signup" && <Signup classes={formClasses}/>}
+        {(pathname === "/" || pathname === "/login") && <Login classes={authClasses}/>}
+        {pathname === "/register" && <Signup classes={authClasses}/>}
 
       </Grid>
   );

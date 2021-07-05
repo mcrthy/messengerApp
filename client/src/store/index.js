@@ -5,7 +5,6 @@ import thunkMiddleware from "redux-thunk";
 import user from "./user";
 import conversations from "./conversations";
 import activeConversation from "./activeConversation";
-import login from "./login";
 
 const CLEAR_ON_LOGOUT = "CLEAR_ON_LOGOUT";
 
@@ -16,7 +15,6 @@ export const clearOnLogout = () => {
 };
 
 const appReducer = combineReducers({
-  login,
   user,
   conversations,
   activeConversation

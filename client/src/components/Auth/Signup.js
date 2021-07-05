@@ -10,7 +10,6 @@ import {
   FormHelperText,
 } from "@material-ui/core";
 import { register } from "../../store/utils/thunkCreators";
-import { switchLoginState } from "../../store/login";
 
 const Signup = ({ classes }) => {
   const dispatch = useDispatch();
@@ -19,7 +18,6 @@ const Signup = ({ classes }) => {
 
   const handlePageSwitch = () => {
     history.push("/login");
-    dispatch(switchLoginState());
   };
 
   const handleRegister = async (event) => {
