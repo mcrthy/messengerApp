@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
   Grid,
@@ -75,12 +75,17 @@ const useFormStyles = makeStyles(() => ({
   },
 }));
 
-const Auth = ({ user, loginState, clearLoginState}) => {
+const Auth = () => {
+  const dispatch = useDispatch();
+
   const classes = useStyles();
   const formClasses = useFormStyles();
 
+  const user = useSelector(state => state.user);
+  const loginState = useSelector(state => state.login);
+
   if (user.id) {
-    clearLoginState();
+    dispatch(clearLoginState());
     return <Redirect to="/home" />;
   }
 
@@ -102,19 +107,4 @@ const Auth = ({ user, loginState, clearLoginState}) => {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    loginState: state.login,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    clearLoginState: () => {
-      dispatch(clearLoginState());
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+export default Auth;
