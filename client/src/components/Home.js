@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Grid, CssBaseline, Button } from "@material-ui/core";
 import { SidebarContainer } from "./Sidebar";
 import { ActiveChat } from "./ActiveChat";
@@ -14,35 +14,25 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const useFetching = (fetch) => {
-  useEffect( () => {
-    fetch();
-  }, []);
-};
-
-const usePrevious = (value) => {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
-
-const Home = ({ user, logout, fetchConversations }) => {
+const Home = () => {
+  const dispatch = useDispatch();
   const classes = useStyles();
+  const user = useSelector(state => state.user);
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const prevId = usePrevious(user.id);
 
-  useFetching(fetchConversations);
+  useEffect(() => {
+    dispatch(fetchConversations());
+  }, []);
 
-  if (user.id !== prevId && isLoggedIn === false) {
+  useEffect(() => {
     setLoggedIn(true);
-  }
+  }, [user.id]);
 
   const handleLogout = async () => {
-    await logout(user.id);
+    dispatch(logout(user.id));
+    dispatch(clearOnLogout());
   };
-
+  
   if (!user.id) {
     if (isLoggedIn) {
       return <Redirect to="/login" />;
@@ -65,22 +55,4 @@ const Home = ({ user, logout, fetchConversations }) => {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    logout: (id) => {
-      dispatch(logout(id));
-      dispatch(clearOnLogout());
-    },
-    fetchConversations: () => {
-      dispatch(fetchConversations());
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home;

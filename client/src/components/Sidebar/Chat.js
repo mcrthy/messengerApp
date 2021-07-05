@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import { handleChatSelection } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles(() => ({
@@ -19,7 +19,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Chat = ({ conversation, handleChatSelection }) => {
+const Chat = ({ conversation }) => {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const otherUser = conversation.otherUser;
 
@@ -29,7 +30,7 @@ const Chat = ({ conversation, handleChatSelection }) => {
       otherUsername: conversation.otherUser.username,
       recipientId: conversation.otherUser.id,
     };
-    await handleChatSelection(body);
+    dispatch(handleChatSelection(body));
   };
 
   return (
@@ -45,15 +46,7 @@ const Chat = ({ conversation, handleChatSelection }) => {
       />
       <ChatContent conversation={conversation} />
     </Box>
-  ); 
+  );
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    handleChatSelection: (body) => {
-      dispatch(handleChatSelection(body));
-    },
-  };
-};
-
-export default connect(null, mapDispatchToProps)(Chat);
+export default Chat;

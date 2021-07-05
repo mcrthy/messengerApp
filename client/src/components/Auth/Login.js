@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Grid,
   FormControl,
@@ -11,12 +11,13 @@ import {
 import { login } from "../../store/utils/thunkCreators";
 import { switchLoginState } from "../../store/login";
 
-const Login = ({ classes, login, switchLoginState }) => {
+const Login = ({ classes }) => {
+  const dispatch = useDispatch();
   const history = useHistory();
 
   const handlePageSwitch = () => {
     history.push("/register");
-    switchLoginState();
+    dispatch(switchLoginState());
   };
 
   const handleLogin = async (event) => {
@@ -24,7 +25,7 @@ const Login = ({ classes, login, switchLoginState }) => {
     const username = event.target.username.value;
     const password = event.target.password.value;
 
-    await login({ username, password });
+    dispatch(login({ username, password }));
   };
   
   return (
@@ -81,16 +82,4 @@ const Login = ({ classes, login, switchLoginState }) => {
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    login: (credentials) => {
-      dispatch(login(credentials));
-    },
-    switchLoginState: () => {
-      dispatch(switchLoginState());
-    },
-  };
-};
-
-
-export default connect(null, mapDispatchToProps)(Login);
+export default Login;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Grid,
   FormControl,
@@ -12,13 +12,14 @@ import {
 import { register } from "../../store/utils/thunkCreators";
 import { switchLoginState } from "../../store/login";
 
-const Signup = ({ classes, register, switchLoginState }) => {
+const Signup = ({ classes }) => {
+  const dispatch = useDispatch();
   const history = useHistory();
   const [formErrorMessage, setFormErrorMessage] = useState({});
 
   const handlePageSwitch = () => {
     history.push("/login");
-    switchLoginState();
+    dispatch(switchLoginState());
   };
 
   const handleRegister = async (event) => {
@@ -33,7 +34,7 @@ const Signup = ({ classes, register, switchLoginState }) => {
       return;
     }
 
-    await register({ username, email, password });
+    dispatch(register({ username, email, password }));
     
   };
 
@@ -121,16 +122,4 @@ const Signup = ({ classes, register, switchLoginState }) => {
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    register: (credentials) => {
-      dispatch(register(credentials));
-    },
-    switchLoginState: () => {
-      dispatch(switchLoginState());
-    },
-  };
-};
-
-
-export default connect(null, mapDispatchToProps)(Signup);
+export default Signup;
